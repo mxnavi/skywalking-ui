@@ -153,8 +153,6 @@ export default class Endpoint extends PureComponent {
     dispatch({
       type: 'endpoint/fetchMetrics',
       payload: { variables: {
-        idsS: calls.filter(_ => _.detectPoint === 'SERVER').map(_ => _.id),
-        idsC: calls.filter(_ => _.detectPoint === 'CLIENT').map(_ => _.id),
         duration,
       }},
     });
@@ -228,20 +226,7 @@ export default class Endpoint extends PureComponent {
             </ChartCard>
           </Col>
         </Row>
-        <Row gutter={8}>
-          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{ marginTop: 8 }}>
-            <ChartCard
-              title="Dependency Map"
-              contentHeight={200}
-            >
-              <EndpointDeps
-                deps={data.getEndpointTopology}
-                metrics={data.metrics}
-                onLoadMetrics={this.handleLoadMetrics}
-              />
-            </ChartCard>
-          </Col>
-        </Row>
+        
         <Row gutter={8}>
           <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{ marginTop: 8 }}>
             <ChartCard

@@ -72,8 +72,7 @@ const dataQuery = `
         id
         source
         target
-        callType
-        detectPoint
+        detectPoints
       }
     }
     getResponseTimeTrend: getLinearIntValues(metric: {
