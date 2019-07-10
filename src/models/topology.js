@@ -138,8 +138,7 @@ export default base({
           id
           source
           target
-          callType
-          detectPoint
+          detectPoints
         }
       }
     }
