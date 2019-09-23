@@ -27,6 +27,8 @@ import { avgTS } from '../../utils/utils';
 import { Panel, Search } from '../../components/Page';
 import TraceList from '../../components/Trace/TraceList';
 import TraceTimeline from '../Trace/TraceTimeline';
+import { routerRedux} from 'dva/router';
+
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -40,9 +42,15 @@ const { Option } = Select;
 @Form.create({
   mapPropsToFields(props) {
     const { variables: { values, labels } } = props.endpoint;
+    const {location} = props;
+    let currentLocation = location.pathname ;
+    let currentLocationStr = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
+    let currentLocationId = currentLocationStr.split("-")[0];
+    let currentLocationName =  currentLocationStr.substring(currentLocationStr.indexOf('-') + 1);
     return {
       serviceId: Form.createFormField({
-        value: { key: values.serviceId ? values.serviceId : '', label: labels.serviceId ? labels.serviceId : '' },
+        /*value: { key: values.serviceId ? values.serviceId : '', label: labels.serviceId ? labels.serviceId : '' },*/
+         value: { key: currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
       }),
       endpointId: Form.createFormField({
         value: { key: values.endpointId ? values.endpointId : '', label: labels.endpointId ? labels.endpointId : '' },
@@ -72,6 +80,8 @@ export default class Endpoint extends PureComponent {
 
   handleServiceSelect = (selected) => {
     const {...propsData} = this.props;
+    const {location} = this.props;
+    location.pathname = "/monitor/endpoint/"+selected.key+"-"+selected.label;
     propsData.dispatch({
       type: 'endpoint/save',
       payload: {
@@ -84,6 +94,9 @@ export default class Endpoint extends PureComponent {
         },
       },
     });
+    propsData.dispatch(routerRedux.push({
+      pathname: location.pathname
+    }));
   }
 
   handleSelect = (selected) => {
@@ -226,7 +239,7 @@ export default class Endpoint extends PureComponent {
             </ChartCard>
           </Col>
         </Row>
-        
+
         <Row gutter={8}>
           <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{ marginTop: 8 }}>
             <ChartCard

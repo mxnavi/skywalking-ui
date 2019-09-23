@@ -27,7 +27,7 @@ import ServiceInstanceLitePanel from 'components/ServiceInstanceLitePanel';
 import ServiceInstance from './ServiceInstance';
 import { getServiceInstanceId, redirect, avgTS } from '../../utils/utils';
 import { axisY, axisMY } from '../../utils/time';
-
+import { routerRedux} from 'dva/router';
 const { Option } = Select;
 const { Item: FormItem } = Form;
 
@@ -48,11 +48,16 @@ const middleColResponsiveProps = {
 @Form.create({
   mapPropsToFields(props) {
     const { variables: { values, labels } } = props.service;
+    const {location} = props;
+    let currentLocation = location.pathname ;
+    let currentLocationStr = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
+    let currentLocationId = currentLocationStr.split("-")[0];
+    let currentLocationName =  currentLocationStr.substring(currentLocationStr.indexOf('-') + 1);
     return {
-      serviceId: Form.createFormField({
-        value: { key: values.serviceId ? values.serviceId : '', label: labels.serviceId ? labels.serviceId : '' },
-      }),
-    };
+        serviceId: Form.createFormField({
+          value: { key: currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
+        })
+      }
   },
 })
 export default class Service extends PureComponent {
@@ -77,6 +82,9 @@ export default class Service extends PureComponent {
 
   handleSelect = (selected) => {
     const {...propsData} = this.props;
+    const {location} = this.props;
+    location.pathname = "/monitor/service/"+selected.key+"-"+selected.label;
+    //先执行请求
     propsData.dispatch({
       type: 'service/saveVariables',
       payload: {
@@ -84,6 +92,10 @@ export default class Service extends PureComponent {
         labels: { serviceId: selected.label },
       },
     });
+    //地址栏地址变化
+    propsData.dispatch(routerRedux.push({
+      pathname: location.pathname
+    }));
   }
 
   handleChange = (variables) => {
