@@ -48,17 +48,24 @@ const middleColResponsiveProps = {
 @Form.create({
   mapPropsToFields(props) {
     const { variables: { values, labels } } = props.service;
-    const {location} = props;
+    const { location} = props;
     let currentLocation = location.pathname ;
-    let currentLocationStr = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
-    let currentLocationId = currentLocationStr.split("-")[0];
-    let currentLocationName =  currentLocationStr.substring(currentLocationStr.indexOf('-') + 1);
+    let currentLocationName = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
+    let serviceIds = props.service.variables.options.serviceId;
+    let currentLocationId;
+    if(serviceIds){
+       serviceIds.forEach((item)=>{
+        if(item.label == currentLocationName){
+            currentLocationId = item.key;
+        }
+      })
+    }
     return {
         serviceId: Form.createFormField({
-          value: { key: currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
+           value: { key:  currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
         })
       }
-  },
+  }
 })
 export default class Service extends PureComponent {
   componentDidMount() {
@@ -83,7 +90,8 @@ export default class Service extends PureComponent {
   handleSelect = (selected) => {
     const {...propsData} = this.props;
     const {location} = this.props;
-    location.pathname = "/monitor/service/"+selected.key+"-"+selected.label;
+    /*location.pathname = "/monitor/service/"+selected.key+"-"+selected.label;*/
+    location.pathname = "/monitor/service/"+selected.label;
     //先执行请求
     propsData.dispatch({
       type: 'service/saveVariables',

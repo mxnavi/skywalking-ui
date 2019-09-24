@@ -44,12 +44,18 @@ const { Option } = Select;
     const { variables: { values, labels } } = props.endpoint;
     const {location} = props;
     let currentLocation = location.pathname ;
-    let currentLocationStr = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
-    let currentLocationId = currentLocationStr.split("-")[0];
-    let currentLocationName =  currentLocationStr.substring(currentLocationStr.indexOf('-') + 1);
+    let currentLocationName = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
+    let serviceIds = props.endpoint.variables.options.serviceId;
+    let currentLocationId;
+    if(serviceIds){
+      serviceIds.forEach((item)=>{
+        if(item.label == currentLocationName){
+          currentLocationId = item.key;
+        }
+      })
+    }
     return {
       serviceId: Form.createFormField({
-        /*value: { key: values.serviceId ? values.serviceId : '', label: labels.serviceId ? labels.serviceId : '' },*/
          value: { key: currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
       }),
       endpointId: Form.createFormField({
@@ -81,7 +87,7 @@ export default class Endpoint extends PureComponent {
   handleServiceSelect = (selected) => {
     const {...propsData} = this.props;
     const {location} = this.props;
-    location.pathname = "/monitor/endpoint/"+selected.key+"-"+selected.label;
+    location.pathname = "/monitor/endpoint/"+selected.label;
     propsData.dispatch({
       type: 'endpoint/save',
       payload: {
