@@ -47,24 +47,24 @@ const middleColResponsiveProps = {
 }))
 @Form.create({
   mapPropsToFields(props) {
-    const { variables: { values, labels } } = props.service;
+    //const { variables: { values, labels } } = props.service;
     const { location} = props;
     let currentLocation = location.pathname ;
     let currentLocationName = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
     let serviceIds = props.service.variables.options.serviceId;
     let currentLocationId;
     if(serviceIds){
-       serviceIds.forEach((item)=>{
+      serviceIds.forEach((item)=>{
         if(item.label == currentLocationName){
-            currentLocationId = item.key;
+          currentLocationId = item.key;
         }
       })
     }
     return {
-        serviceId: Form.createFormField({
-           value: { key:  currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
-        })
-      }
+      serviceId: Form.createFormField({
+        value: { key:  currentLocationId ? currentLocationId : '', label: currentLocationName ? currentLocationName : '' },
+      })
+    }
   }
 })
 export default class Service extends PureComponent {
@@ -90,7 +90,6 @@ export default class Service extends PureComponent {
   handleSelect = (selected) => {
     const {...propsData} = this.props;
     const {location} = this.props;
-    /*location.pathname = "/monitor/service/"+selected.key+"-"+selected.label;*/
     location.pathname = "/monitor/service/"+selected.label;
     //先执行请求
     propsData.dispatch({
@@ -102,7 +101,7 @@ export default class Service extends PureComponent {
     });
     //地址栏地址变化
     propsData.dispatch(routerRedux.push({
-      pathname: location.pathname
+        pathname: location.pathname
     }));
   }
 
@@ -148,6 +147,18 @@ export default class Service extends PureComponent {
     const { getFieldDecorator } = propsData.form;
     const { variables: { values, options, labels }, data } = propsData.service;
     const { getResponseTimeTrend, getThroughputTrend, getSLATrend } = data;
+    const { location} = this.props;
+    let currentLocation = location.pathname ;
+    let currentLocationName = currentLocation.substring(currentLocation.lastIndexOf("/")).replace("/","");
+    let serviceIds = this.props.service.variables.options.serviceId;
+    if(serviceIds){
+       serviceIds.forEach((item)=>{
+          if(item.label === currentLocationName){
+            propsData.service.variables.labels.serviceId = currentLocationName;
+            propsData.service.variables.values.serviceId = item.key;
+          }
+      })
+    }
     return (
       <div>
         <Form layout="inline">
@@ -252,7 +263,7 @@ export default class Service extends PureComponent {
               >
                 <Line
                   data={axisMY(propsData.duration, [{ title: 'p99', value: data.getP99}, { title: 'p95', value: data.getP95}
-                  , { title: 'p90', value: data.getP90}, { title: 'p75', value: data.getP75}, { title: 'p50', value: data.getP50}])}
+                    , { title: 'p90', value: data.getP90}, { title: 'p75', value: data.getP75}, { title: 'p50', value: data.getP50}])}
                 />
               </Card>
             </Col>
@@ -318,7 +329,7 @@ export default class Service extends PureComponent {
               <ServiceInstance data={data} duration={duration} />
             </Panel>
           </Col>
-         ) : null}
+        ) : null}
         <Col span={showServiceInstance ? 0 : 24}>
           {this.renderApp()}
         </Col>

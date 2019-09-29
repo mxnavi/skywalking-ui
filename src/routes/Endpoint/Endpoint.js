@@ -51,6 +51,9 @@ const { Option } = Select;
       serviceIds.forEach((item)=>{
         if(item.label == currentLocationName){
           currentLocationId = item.key;
+          props.endpoint.variables.labels.serviceId = currentLocationName;
+          props.endpoint.variables.values.serviceId = item.key;
+          props.endpoint.data.serviceInfo.serviceId = item.key;
         }
       })
     }
@@ -112,7 +115,7 @@ export default class Endpoint extends PureComponent {
       payload: {
         variables: {
           values: { endpointId: selected.key },
-          labels: { endpointId: selected.label },
+          labels: { endpointId: selected.label},
         },
         data: {
           endpointInfo: selected,
@@ -185,6 +188,7 @@ export default class Endpoint extends PureComponent {
     const { variables: { values }, data } = endpoint;
     const { getEndpointResponseTimeTrend, getEndpointThroughputTrend,
       getEndpointSLATrend, queryBasicTraces } = data;
+
     if (!values.endpointId) {
       return null;
     }
